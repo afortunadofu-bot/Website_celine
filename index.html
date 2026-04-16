@@ -7,7 +7,7 @@
 <title>傅聖嵐 — Fu Sheng-Lan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&family=DM+Mono:wght@300;400&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&family=DM+Mono:wght@300;400&family=Noto+Sans+TC:wght@400;700;900&family=Inter+Tight:ital,wght@0,800;0,900;1,800;1,900&display=swap" rel="stylesheet">
 <style>
 /* ══════════════════════════════════════
    RESET
@@ -741,12 +741,194 @@ body.lang-zh [data-zh] { }
   .po-results{grid-template-columns:1fr 1fr}
   .po-body{padding:3rem 2rem 6rem}
 }
-@media(max-width:640px){
-  .hero-name{font-size:clamp(4rem,18vw,8rem)}
-  .hero-name-zh{font-size:clamp(2.5rem,14vw,6rem)}
-  .po-meta-grid{grid-template-columns:1fr}
-  .po-results{grid-template-columns:1fr}
+/* ══════════════════════════════════════
+   ASYMMETRIC HERO
+══════════════════════════════════════ */
+#asymhero{
+  position:relative;
+  width:100%;height:100vh;min-height:600px;
+  background:linear-gradient(135deg,#0A0906 0%,#1A1508 38%,#0D0C0A 65%,#050404 100%);
+  overflow:hidden;
 }
+
+/* ── Film grain overlay ── */
+#asymhero::before{
+  content:'';
+  position:absolute;inset:0;z-index:1;
+  pointer-events:none;
+  opacity:.55;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23grain)' opacity='0.08'/%3E%3C/svg%3E");
+  background-size:300px 300px;
+  mix-blend-mode:overlay;
+}
+
+/* ── Gold→black radial glow in center ── */
+#asymhero::after{
+  content:'';
+  position:absolute;inset:0;z-index:0;
+  pointer-events:none;
+  background:
+    radial-gradient(ellipse 55% 40% at 48% 52%,rgba(184,145,58,.08) 0%,transparent 70%),
+    radial-gradient(ellipse 30% 25% at 20% 18%,rgba(184,145,58,.05) 0%,transparent 60%),
+    radial-gradient(ellipse 25% 20% at 82% 80%,rgba(184,145,58,.07) 0%,transparent 60%);
+}
+
+/* ── Subtle grid ── */
+.ah-grid{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(184,145,58,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(184,145,58,.04) 1px,transparent 1px);
+  background-size:80px 80px;
+}
+
+/* ── Text layer ── */
+.ah-text{position:absolute;inset:0;z-index:3;pointer-events:none}
+
+/* Top-left block */
+.ah-tl{
+  position:absolute;top:13%;left:7%;
+  max-width:52vw;
+}
+.ah-tl-eyebrow{
+  font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.28em;
+  text-transform:uppercase;color:rgba(184,145,58,.6);
+  margin-bottom:1.2rem;
+  display:flex;align-items:center;gap:.6rem;
+  opacity:0;/* GSAP */
+}
+.ah-tl-eyebrow::before{content:'';width:20px;height:1px;background:rgba(184,145,58,.6)}
+.ah-line1{
+  font-family:'Inter Tight',sans-serif;font-weight:900;
+  font-size:clamp(2.8rem,6.5vw,7.2rem);
+  letter-spacing:-0.055em;line-height:.9;
+  color:#F2F0EB;
+  overflow:hidden;
+}
+.ah-line1-inner{
+  display:block;transform:translateY(105%);/* GSAP */
+}
+.ah-line2{
+  font-family:'Inter Tight',sans-serif;font-weight:900;
+  font-size:clamp(2.8rem,6.5vw,7.2rem);
+  letter-spacing:-0.055em;line-height:.9;
+  color:rgba(184,145,58,.95);
+  overflow:hidden;
+  margin-top:.05em;
+}
+.ah-line2-inner{display:block;transform:translateY(105%)}
+
+/* Bottom-right block */
+.ah-br{
+  position:absolute;bottom:12%;right:7%;
+  text-align:right;max-width:48vw;
+}
+.ah-line3{
+  font-family:'Inter Tight',sans-serif;font-weight:900;
+  font-size:clamp(2.2rem,5.5vw,6rem);
+  letter-spacing:-0.05em;line-height:.9;
+  color:#F2F0EB;
+  overflow:hidden;
+}
+.ah-line3-inner{display:block;transform:translateY(105%)}
+.ah-line4{
+  font-family:'Inter Tight',sans-serif;font-weight:900;
+  font-size:clamp(2.2rem,5.5vw,6rem);
+  letter-spacing:-0.05em;line-height:.9;
+  color:rgba(184,145,58,.95);
+  overflow:hidden;
+  margin-top:.05em;
+}
+.ah-line4-inner{display:block;transform:translateY(105%)}
+.ah-br-sub{
+  font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.22em;
+  text-transform:uppercase;color:rgba(242,240,235,.28);
+  margin-top:1.2rem;
+  display:flex;align-items:center;justify-content:flex-end;gap:.6rem;
+  opacity:0;
+}
+.ah-br-sub::after{content:'';width:20px;height:1px;background:rgba(242,240,235,.28)}
+
+/* Corner info clusters */
+.ah-corner-bl{
+  position:absolute;bottom:8%;left:7%;z-index:3;
+  opacity:0;
+}
+.ah-corner-bl p{
+  font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.14em;
+  color:rgba(242,240,235,.3);line-height:1.9;
+}
+.ah-corner-bl p span{color:rgba(184,145,58,.7)}
+.ah-corner-tr{
+  position:absolute;top:10%;right:7%;z-index:3;
+  text-align:right;opacity:0;
+}
+.ah-corner-tr p{
+  font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.14em;
+  color:rgba(242,240,235,.3);line-height:1.9;
+}
+.ah-corner-tr p span{color:rgba(184,145,58,.7)}
+
+/* ── SVG stroke canvas ── */
+.ah-svg{
+  position:absolute;inset:0;z-index:2;
+  width:100%;height:100%;
+  overflow:visible;pointer-events:none;
+}
+/* The guide path — invisible, used for motion */
+#ah-path-guide{fill:none;stroke:none}
+
+/* Visible stroke */
+#ah-stroke{
+  fill:none;
+  stroke:url(#ah-grad);
+  stroke-width:1.2;
+  stroke-linecap:round;
+  stroke-dasharray:1000;
+  stroke-dashoffset:1000;/* animated by GSAP */
+}
+
+/* Glow blur duplicate */
+#ah-stroke-glow{
+  fill:none;
+  stroke:rgba(184,145,58,.22);
+  stroke-width:6;
+  stroke-linecap:round;
+  stroke-dasharray:1000;
+  stroke-dashoffset:1000;
+  filter:url(#ah-blur);
+}
+
+/* Scroll hint at bottom center */
+.ah-scroll{
+  position:absolute;bottom:3.5%;left:50%;transform:translateX(-50%);
+  z-index:4;
+  display:flex;flex-direction:column;align-items:center;gap:.5rem;
+  opacity:0;
+}
+.ah-scroll-label{
+  font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.22em;
+  text-transform:uppercase;color:rgba(242,240,235,.22);
+}
+.ah-scroll-line{
+  width:1px;height:32px;
+  background:linear-gradient(to bottom,rgba(184,145,58,.5),transparent);
+  animation:ahscroll 1.8s ease infinite;
+}
+@keyframes ahscroll{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* RWD */
+@media(max-width:768px){
+  .ah-tl{top:10%;left:5%;max-width:70vw}
+  .ah-br{bottom:10%;right:5%;max-width:68vw}
+  .ah-corner-tr{display:none}
+}
+@media(max-width:480px){
+  .ah-line1,.ah-line2{font-size:clamp(2rem,9vw,3.5rem)}
+  .ah-line3,.ah-line4{font-size:clamp(1.6rem,7.5vw,3rem)}
+}
+
+@keyframes fdot{0%,100%{opacity:.4}50%{opacity:1}}
 </style>
 </head>
 <body class="lang-en">
@@ -853,6 +1035,86 @@ body.lang-zh [data-zh] { }
   </nav>
   <div class="po-body" id="poBody"></div>
 </div>
+
+<!-- ══ ASYMMETRIC HERO ══ -->
+<section id="asymhero">
+
+  <!-- Background grid -->
+  <div class="ah-grid"></div>
+
+  <!-- SVG: hand-drawn guide stroke + glow -->
+  <svg class="ah-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+    <defs>
+      <!-- Gradient along the stroke: gold at start, fades to dim gold -->
+      <linearGradient id="ah-grad" gradientUnits="userSpaceOnUse"
+        x1="22%" y1="22%" x2="78%" y2="78%">
+        <stop offset="0%"   stop-color="rgba(184,145,58,.9)"/>
+        <stop offset="45%"  stop-color="rgba(184,145,58,.6)"/>
+        <stop offset="100%" stop-color="rgba(184,145,58,.35)"/>
+      </linearGradient>
+      <!-- Glow blur filter -->
+      <filter id="ah-blur" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="1.2"/>
+      </filter>
+    </defs>
+
+    <!-- Glow duplicate (drawn first, behind) -->
+    <path id="ah-stroke-glow"
+      d="M 8 45 
+     C 25 45, 45 40, 55 55 
+     C 65 70, 75 92, 92 88"
+    />
+    <!-- Visible crisp stroke (drawn on top) -->
+    <path id="ah-stroke"
+      d="M 8 45 
+     C 25 45, 45 40, 55 55 
+     C 65 70, 75 92, 92 88"
+    />
+
+    <!-- Small terminus dot at start -->
+    <circle id="ah-dot-start" cx="22" cy="21" r=".7" fill="rgba(184,145,58,.8)" opacity="0"/>
+    <!-- Small terminus dot at end -->
+    <circle id="ah-dot-end"   cx="78" cy="80" r=".7" fill="rgba(184,145,58,.5)" opacity="0"/>
+  </svg>
+
+  <!-- Text layer -->
+  <div class="ah-text">
+
+    <!-- Top-left: first phrase -->
+    <div class="ah-tl">
+      <div class="ah-tl-eyebrow" id="ahEyebrow">NTHU Economics · Co-Founder AirQuant</div>
+      <div class="ah-line1"><span class="ah-line1-inner" id="ahL1">Decoding</span></div>
+      <div class="ah-line2"><span class="ah-line2-inner" id="ahL2">Market Patterns</span></div>
+    </div>
+
+    <!-- Bottom-right: second phrase -->
+    <div class="ah-br">
+      <div class="ah-line3"><span class="ah-line3-inner" id="ahL3">with Human</span></div>
+      <div class="ah-line4"><span class="ah-line4-inner" id="ahL4">Pulse.</span></div>
+      <div class="ah-br-sub" id="ahBrSub">Fu Sheng-Lan · 傅聖嵐</div>
+    </div>
+
+    <!-- Corner info: bottom-left -->
+    <div class="ah-corner-bl" id="ahCornerBl">
+      <p><span>Financial Analytics</span> · Digital Assets · PM</p>
+      <p>Open to Work · <span>2026</span></p>
+      <p>afortunado.fu@gmail.com</p>
+    </div>
+
+    <!-- Corner info: top-right -->
+    <div class="ah-corner-tr" id="ahCornerTr">
+      <p>Data <span>×</span> Finance <span>×</span> Execution</p>
+      <p>Taipei · Hsinchu · Remote</p>
+    </div>
+  </div>
+
+  <!-- Scroll hint -->
+  <div class="ah-scroll" id="ahScroll">
+    <div class="ah-scroll-line"></div>
+    <span class="ah-scroll-label">scroll</span>
+  </div>
+
+</section>
 
 <!-- ══ HERO ══ -->
 <section id="hero">
@@ -1418,8 +1680,6 @@ document.body.classList.add('lang-en');
 /* ══════════════════════════════════════
    CINEMATIC LOADER — slogan sequence
 ══════════════════════════════════════ */
-gsap.registerPlugin(ScrollTrigger);
-
 // Geometry pulse
 gsap.to('.loader-geo',{scale:1,duration:2,ease:'power3.out',stagger:.2,delay:.1});
 
@@ -1459,6 +1719,67 @@ loaderTL
    MAIN INIT — after loader
 ══════════════════════════════════════ */
 function initMain(){
+
+  /* ──────────────────────────────────────
+     ASYMMETRIC HERO — stroke + text reveal
+  ────────────────────────────────────── */
+  (function(){
+    // Measure SVG path length dynamically for reliable dash animation
+    const stroke     = document.getElementById('ah-stroke');
+    const strokeGlow = document.getElementById('ah-stroke-glow');
+    if(!stroke) return;
+
+    const len = stroke.getTotalLength();
+    [stroke, strokeGlow].forEach(el=>{
+      el.style.strokeDasharray  = len;
+      el.style.strokeDashoffset = len;
+    });
+
+    const ahTL = gsap.timeline({delay:.15});
+
+    // 1. Eyebrow + corner info fade in first (sets stage)
+    ahTL.to('#ahEyebrow',{opacity:1,y:0,duration:.7,ease:'power3.out'},0)
+        .to('#ahCornerTr',{opacity:1,y:0,duration:.6,ease:'power3.out'},0.1)
+        .to('#ahCornerBl',{opacity:.8,y:0,duration:.6,ease:'power3.out'},0.15);
+
+    // 2. First phrase slides in from left (mask reveal)
+    ahTL.to('#ahL1',{y:'0%',duration:.85,ease:'cubic-bezier(0.16,1,0.3,1)'},0.2)
+        .to('#ahL2',{y:'0%',duration:.85,ease:'cubic-bezier(0.16,1,0.3,1)'},0.35);
+
+    // 3. Start dot appears, then stroke draws:
+    //    — pause at top-left for 0.5s (Fast In from ~40% onward, Slow Out at end)
+    ahTL.to('#ah-dot-start',{opacity:1,duration:.2,ease:'power2.out'},0.7);
+
+    // stroke draws in 3 phases via progress:
+    // Phase A: 0→40% very slow (linger at source) — 0.5 sec
+    // Phase B: 40→80% fast (cuts through center)   — 0.35 sec
+    // Phase C: 80→100% slow out (arrive at target) — 0.45 sec
+    ahTL
+      .to([stroke,strokeGlow],{
+        strokeDashoffset: len * 0.60,   // draw 40%
+        duration:0.5,
+        ease:'power1.in'
+      }, 0.9)
+      .to([stroke,strokeGlow],{
+        strokeDashoffset: len * 0.15,   // fast through center
+        duration:0.35,
+        ease:'power3.in'
+      }, 1.4)
+      .to([stroke,strokeGlow],{
+        strokeDashoffset: 0,            // slow arrival
+        duration:0.55,
+        ease:'power2.out'
+      }, 1.75);
+
+    // 4. End dot + second phrase reveal after stroke arrives
+    ahTL.to('#ah-dot-end',{opacity:1,duration:.25,ease:'power2.out'},2.1)
+        .to('#ahL3',{y:'0%',duration:.85,ease:'cubic-bezier(0.16,1,0.3,1)'},2.0)
+        .to('#ahL4',{y:'0%',duration:.85,ease:'cubic-bezier(0.16,1,0.3,1)'},2.15);
+
+    // 5. Sub-label + scroll hint last
+    ahTL.to('#ahBrSub',{opacity:1,duration:.55,ease:'power2.out'},2.5)
+        .to('#ahScroll', {opacity:.7,duration:.6,ease:'power2.out'},2.7);
+  })();
 
   /* HERO MASK REVEAL */
   const reveals=document.querySelectorAll('.reveal-inner');
@@ -1513,15 +1834,20 @@ function initMain(){
 
   /* SCROLL COLOR TRANSITION */
   const scenes=[
+    {id:'asymhero',bg:'#0A0906',text:'#F2F0EB'},
     {id:'hero',bg:'#F2F0EB',text:'#121212'},
-    {id:'band',bg:'#C8F000',text:'#121212'},
+    {id:'band',bg:'#111110',text:'#F2F0EB'},
     {id:'about',bg:'#F2F0EB',text:'#121212'},
     {id:'approach',bg:'#111110',text:'#F2F0EB'},
     {id:'experience',bg:'#F2F0EB',text:'#121212'},
     {id:'skills',bg:'#111110',text:'#F2F0EB'},
     {id:'contact',bg:'#111110',text:'#F2F0EB'},
   ];
-  let curBg='#F2F0EB';
+  // Start body in dark to match asymhero
+  document.body.style.backgroundColor='#0A0906';
+  document.body.style.color='#F2F0EB';
+  document.body.classList.add('dark');
+  let curBg='#0A0906';
   window.addEventListener('scroll',()=>{
     const mid=window.scrollY+window.innerHeight*.5;
     scenes.forEach(s=>{

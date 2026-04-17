@@ -123,6 +123,36 @@ body.dark .nav-logo{color:var(--bg)}
 body.dark .nav-time{color:var(--muted-d)}
 @media(min-width:768px){.nav-time{display:block}}
 
+/* inline language toggle */
+.nav-lang{
+  pointer-events:all;display:flex;align-items:center;gap:.15rem;
+  padding:.2rem .35rem;
+  border:1px solid rgba(18,18,18,.14);border-radius:999px;
+  background:rgba(242,240,235,.25);backdrop-filter:blur(6px);
+  transition:background .4s,border-color .4s;
+}
+body.dark .nav-lang{background:rgba(17,17,16,.35);border-color:rgba(242,240,235,.16)}
+.nlbtn{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.12em;
+  background:none;border:none;cursor:pointer;
+  padding:.25rem .55rem;border-radius:999px;
+  color:var(--mute);transition:color .25s,background .25s;line-height:1;
+}
+body.dark .nlbtn{color:rgba(242,240,235,.45)}
+.nlbtn:hover{color:var(--text)}
+body.dark .nlbtn:hover{color:var(--bg)}
+.nlbtn.on{background:var(--gold);color:var(--dark);font-weight:700}
+body.dark .nlbtn.on{background:var(--gold);color:var(--dark)}
+.nav-lang-sep{
+  font-family:var(--mono);font-size:.5rem;
+  color:rgba(18,18,18,.2);user-select:none;
+}
+body.dark .nav-lang-sep{color:rgba(242,240,235,.2)}
+@media(max-width:520px){
+  .nav-lang{padding:.15rem .25rem}
+  .nlbtn{font-size:.52rem;padding:.22rem .4rem;letter-spacing:.1em}
+}
+
 /* burger */
 .burger{
   pointer-events:all;cursor:pointer;
@@ -735,8 +765,10 @@ body.lang-zh [data-zh] { }
   #contact{grid-template-columns:1fr}
   .c-poster,.c-right{padding:5rem 2rem}
   footer{padding:4rem 2rem 2rem}
-  #menu{grid-template-columns:1fr}
-  .menu-right{display:none}
+  #menu{grid-template-columns:1fr;grid-template-rows:auto 1fr;overflow-y:auto}
+  .menu-left{padding:5.5rem 2rem 2rem}
+  .menu-right{display:block;padding:2rem 2rem 4rem;border-top:1px solid rgba(242,240,235,.07)}
+  .menu-nav a{font-size:clamp(1.6rem,6.5vw,2.4rem)}
   .po-meta-grid{grid-template-columns:1fr 1fr}
   .po-results{grid-template-columns:1fr 1fr}
   .po-body{padding:3rem 2rem 6rem}
@@ -878,21 +910,41 @@ body.lang-zh [data-zh] { }
 /* The guide path — invisible, used for motion */
 #ah-path-guide{fill:none;stroke:none}
 
-/* Visible stroke */
+/* Main visible stroke — soft guide ribbon between titles */
 #ah-stroke{
   fill:none;
   stroke:url(#ah-grad);
-  stroke-width:1.2;
+  stroke-width:.9;
   stroke-linecap:round;
   stroke-dasharray:1000;
   stroke-dashoffset:1000;/* animated by GSAP */
 }
 
+/* Echo — lighter parallel trace, adds airy depth */
+#ah-stroke-echo{
+  fill:none;
+  stroke:rgba(184,145,58,.18);
+  stroke-width:.5;
+  stroke-linecap:round;
+  stroke-dasharray:1000;
+  stroke-dashoffset:1000;
+}
+
+/* Short geometric accents beside the titles */
+.ah-accent{
+  fill:none;stroke:rgba(184,145,58,.55);
+  stroke-width:.4;stroke-linecap:round;
+  stroke-dasharray:50;stroke-dashoffset:50;
+}
+
+/* Terminus orbs */
+#ah-ornament{opacity:0}
+
 /* Glow blur duplicate */
 #ah-stroke-glow{
   fill:none;
   stroke:rgba(184,145,58,.22);
-  stroke-width:6;
+  stroke-width:4.5;
   stroke-linecap:round;
   stroke-dasharray:1000;
   stroke-dashoffset:1000;
@@ -916,6 +968,23 @@ body.lang-zh [data-zh] { }
   animation:ahscroll 1.8s ease infinite;
 }
 @keyframes ahscroll{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* Post-reveal breathing for the guide stroke */
+@keyframes ahBreathe{
+  0%,100%{stroke-opacity:1;stroke-width:.9}
+  50%{stroke-opacity:.7;stroke-width:1.05}
+}
+@keyframes ahGlowBreathe{
+  0%,100%{opacity:.8}
+  50%{opacity:.45}
+}
+@keyframes ahDotPulse{
+  0%,100%{r:.7;opacity:1}
+  50%{r:1.1;opacity:.55}
+}
+#ah-stroke.ah-breathe{animation:ahBreathe 5.5s ease-in-out infinite}
+#ah-stroke-glow.ah-breathe{animation:ahGlowBreathe 5.5s ease-in-out infinite}
+.ah-dot-live{animation:ahDotPulse 3.8s ease-in-out infinite}
 
 /* RWD */
 @media(max-width:768px){
@@ -959,6 +1028,11 @@ body.lang-zh [data-zh] { }
     <span data-zh>傅聖嵐</span>
   </span>
   <div class="nav-right">
+    <div class="nav-lang" role="group" aria-label="Language">
+      <button class="nlbtn on" id="nLangEn" onclick="setLang('en')">EN</button>
+      <span class="nav-lang-sep">·</span>
+      <button class="nlbtn" id="nLangZh" onclick="setLang('zh')">中文</button>
+    </div>
     <span class="nav-time" id="navTime"></span>
     <button class="burger" id="burger" aria-label="Menu">
       <span class="bl"></span><span class="bl"></span><span class="bl"></span>
@@ -981,10 +1055,6 @@ body.lang-zh [data-zh] { }
       </ul>
     </div>
     <div class="menu-bottom">
-      <div class="menu-lang">
-        <button class="mlbtn on" id="mLangEn" onclick="setLang('en')">EN</button>
-        <button class="mlbtn" id="mLangZh" onclick="setLang('zh')">中文</button>
-      </div>
       <div class="menu-contacts">
         <a href="mailto:afortunado.fu@gmail.com">afortunado.fu@gmail.com</a>
         <a href="tel:0983517504">0983-517-504</a>
@@ -1009,7 +1079,7 @@ body.lang-zh [data-zh] { }
       <div class="pc-meta">2025.11 – Present &nbsp;·&nbsp; Systems Integration</div>
       <div class="pc-tags"><span class="pc-tag">SOP Design</span><span class="pc-tag">Process Optimization</span><span class="pc-tag">PM</span></div>
     </div>
-    <div class="proj-card" onclick="openProject('CrypTo Digital Asset Management');closeMenu()">
+    <div class="proj-card" onclick="openProject('crypto');closeMenu()">
       <div class="pc-index">P.03</div>
       <div class="pc-name" data-en>CrypTo Digital Asset Management — Web3 Market Intelligence</div>
       <div class="pc-name" data-zh>燦通國際資產管理公司 — Web3 市場情報分析</div>
@@ -1042,39 +1112,58 @@ body.lang-zh [data-zh] { }
   <!-- Background grid -->
   <div class="ah-grid"></div>
 
-  <!-- SVG: hand-drawn guide stroke + glow -->
+  <!-- SVG: soft guide ribbon + geometric accents (never crosses the text) -->
   <svg class="ah-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
     <defs>
-      <!-- Gradient along the stroke: gold at start, fades to dim gold -->
+      <!-- Gradient: fades in at both ends for a "drawn by hand" feel -->
       <linearGradient id="ah-grad" gradientUnits="userSpaceOnUse"
-        x1="22%" y1="22%" x2="78%" y2="78%">
-        <stop offset="0%"   stop-color="rgba(184,145,58,.9)"/>
-        <stop offset="45%"  stop-color="rgba(184,145,58,.6)"/>
-        <stop offset="100%" stop-color="rgba(184,145,58,.35)"/>
+        x1="15%" y1="43%" x2="82%" y2="56%">
+        <stop offset="0%"   stop-color="rgba(184,145,58,0)"/>
+        <stop offset="12%"  stop-color="rgba(184,145,58,.8)"/>
+        <stop offset="50%"  stop-color="rgba(184,145,58,.55)"/>
+        <stop offset="88%"  stop-color="rgba(184,145,58,.75)"/>
+        <stop offset="100%" stop-color="rgba(184,145,58,0)"/>
       </linearGradient>
       <!-- Glow blur filter -->
       <filter id="ah-blur" x="-50%" y="-50%" width="200%" height="200%">
-        <feGaussianBlur stdDeviation="1.2"/>
+        <feGaussianBlur stdDeviation="1.4"/>
       </filter>
     </defs>
 
-    <!-- Glow duplicate (drawn first, behind) -->
+    <!-- Soft glow duplicate (drawn first, behind) — curves below top-left text, up to above bottom-right text -->
     <path id="ah-stroke-glow"
-      d="M 8 45 
-     C 25 45, 45 40, 55 55 
-     C 65 70, 75 92, 92 88"
+      d="M 15 43
+         C 28 42, 36 48, 42 52
+         C 48 56, 54 58, 62 57
+         C 70 56, 76 56, 82 56"
     />
-    <!-- Visible crisp stroke (drawn on top) -->
+    <!-- Crisp visible stroke — matches glow path -->
     <path id="ah-stroke"
-      d="M 8 45 
-     C 25 45, 45 40, 55 55 
-     C 65 70, 75 92, 92 88"
+      d="M 15 43
+         C 28 42, 36 48, 42 52
+         C 48 56, 54 58, 62 57
+         C 70 56, 76 56, 82 56"
+    />
+    <!-- Echo trace — tiny offset for depth / hand-drawn feel -->
+    <path id="ah-stroke-echo"
+      d="M 15.5 44.3
+         C 28 43.3, 36.5 49.3, 42.5 53.3
+         C 48.5 57.3, 54.5 59.3, 62.5 58.3
+         C 70.5 57.3, 76.5 57.3, 81.5 57.3"
     />
 
-    <!-- Small terminus dot at start -->
-    <circle id="ah-dot-start" cx="22" cy="21" r=".7" fill="rgba(184,145,58,.8)" opacity="0"/>
-    <!-- Small terminus dot at end -->
-    <circle id="ah-dot-end"   cx="78" cy="80" r=".7" fill="rgba(184,145,58,.5)" opacity="0"/>
+    <!-- Geometric accent: short tick below the top-left title (subtle underline) -->
+    <line class="ah-accent" id="ah-acc-tl" x1="7" y1="40.5" x2="14" y2="40.5"/>
+    <!-- Geometric accent: short tick above the bottom-right title (subtle overline) -->
+    <line class="ah-accent" id="ah-acc-br" x1="86" y1="58" x2="93" y2="58"/>
+
+    <!-- Tiny diamond ornament near the curve's midpoint -->
+    <rect id="ah-ornament" x="46.3" y="54.7" width="1.2" height="1.2"
+          fill="rgba(184,145,58,.7)" transform="rotate(45 46.9 55.3)"/>
+
+    <!-- Terminus dots -->
+    <circle id="ah-dot-start" cx="15" cy="43" r=".7" fill="rgba(184,145,58,.85)" opacity="0"/>
+    <circle id="ah-dot-end"   cx="82" cy="56" r=".7" fill="rgba(184,145,58,.6)"  opacity="0"/>
   </svg>
 
   <!-- Text layer -->
@@ -1315,7 +1404,7 @@ body.lang-zh [data-zh] { }
         <span class="etag" data-sk="Python">Python</span><span class="etag" data-sk="Data Analytics">Data Analytics</span>
         <span class="etag" data-sk="Financial Modeling">Financial Modeling</span>
       </div>
-      <button class="exp-view-btn" onclick="openProject('CrypTo Digital Asset Management')"><span data-en>Full Case Study →</span><span data-zh>完整案例分析 →</span></button>
+      <button class="exp-view-btn" onclick="openProject('crypto')"><span data-en>Full Case Study →</span><span data-zh>完整案例分析 →</span></button>
     </div>
     <div class="exp-content">
       <div class="tldr-bar">
@@ -1501,7 +1590,7 @@ const PROJECTS={
       results:[{n:'50%',l:'上手時間縮短\n新專案設置'},{n:'30%',l:'重新確認輪次減少\n每個專案'},{n:'1週',l:'工程啟動提前\n平均每個專案'}]
     }
   },
-  CrypTo Digital Asset Management:{
+  crypto:{
     en:{
       index:'P.03',period:'Jan 2025 – Oct 2025',duration:'10 months',
       title:'CrypTo Digital Asset Management\nWeb3 Market\nIntelligence',
@@ -1665,11 +1754,15 @@ function setLang(l){
   document.body.classList.remove('lang-en','lang-zh');
   document.body.classList.add('lang-'+l);
 
-  // Update lang pill buttons in menu
+  // Update lang pill buttons (nav top + legacy menu if present)
   const btnEn=document.getElementById('mLangEn');
   const btnZh=document.getElementById('mLangZh');
   if(btnEn) btnEn.classList.toggle('on',l==='en');
   if(btnZh) btnZh.classList.toggle('on',l==='zh');
+  const nbtnEn=document.getElementById('nLangEn');
+  const nbtnZh=document.getElementById('nLangZh');
+  if(nbtnEn) nbtnEn.classList.toggle('on',l==='en');
+  if(nbtnZh) nbtnZh.classList.toggle('on',l==='zh');
 
   // HTML lang attribute for SEO
   document.documentElement.lang=l==='en'?'en':'zh-TW';
@@ -1724,15 +1817,29 @@ function initMain(){
      ASYMMETRIC HERO — stroke + text reveal
   ────────────────────────────────────── */
   (function(){
-    // Measure SVG path length dynamically for reliable dash animation
+    // Measure SVG path lengths dynamically for reliable dash animation
     const stroke     = document.getElementById('ah-stroke');
     const strokeGlow = document.getElementById('ah-stroke-glow');
+    const strokeEcho = document.getElementById('ah-stroke-echo');
+    const accTl      = document.getElementById('ah-acc-tl');
+    const accBr      = document.getElementById('ah-acc-br');
+    const ornament   = document.getElementById('ah-ornament');
+    const dotStart   = document.getElementById('ah-dot-start');
+    const dotEnd     = document.getElementById('ah-dot-end');
     if(!stroke) return;
 
     const len = stroke.getTotalLength();
-    [stroke, strokeGlow].forEach(el=>{
+    [stroke, strokeGlow, strokeEcho].forEach(el=>{
+      if(!el)return;
       el.style.strokeDasharray  = len;
       el.style.strokeDashoffset = len;
+    });
+    // Accent ticks — measured separately (much shorter)
+    [accTl, accBr].forEach(el=>{
+      if(!el)return;
+      const al = el.getTotalLength();
+      el.style.strokeDasharray  = al;
+      el.style.strokeDashoffset = al;
     });
 
     const ahTL = gsap.timeline({delay:.15});
@@ -1742,43 +1849,49 @@ function initMain(){
         .to('#ahCornerTr',{opacity:1,y:0,duration:.6,ease:'power3.out'},0.1)
         .to('#ahCornerBl',{opacity:.8,y:0,duration:.6,ease:'power3.out'},0.15);
 
-    // 2. First phrase slides in from left (mask reveal)
+    // 2. Top-left phrase slides in (mask reveal)
     ahTL.to('#ahL1',{y:'0%',duration:.85,ease:'cubic-bezier(0.16,1,0.3,1)'},0.2)
         .to('#ahL2',{y:'0%',duration:.85,ease:'cubic-bezier(0.16,1,0.3,1)'},0.35);
 
-    // 3. Start dot appears, then stroke draws:
-    //    — pause at top-left for 0.5s (Fast In from ~40% onward, Slow Out at end)
-    ahTL.to('#ah-dot-start',{opacity:1,duration:.2,ease:'power2.out'},0.7);
+    // 3. Accent tick under top-left title draws first (the line "starts below" the title)
+    ahTL.to(accTl,{strokeDashoffset:0,duration:.55,ease:'power2.out'},0.95);
 
-    // stroke draws in 3 phases via progress:
-    // Phase A: 0→40% very slow (linger at source) — 0.5 sec
-    // Phase B: 40→80% fast (cuts through center)   — 0.35 sec
-    // Phase C: 80→100% slow out (arrive at target) — 0.45 sec
+    // 4. Start dot pops in at the start position
+    ahTL.to(dotStart,{opacity:1,duration:.25,ease:'power2.out'},1.05);
+
+    // 5. Main stroke + echo draw along the soft curve — three tempo phases
+    //    Phase A: slow entry (linger by top-left)
+    //    Phase B: mid-section quickens
+    //    Phase C: slow arrival (ease into bottom-right)
     ahTL
-      .to([stroke,strokeGlow],{
-        strokeDashoffset: len * 0.60,   // draw 40%
-        duration:0.5,
-        ease:'power1.in'
-      }, 0.9)
-      .to([stroke,strokeGlow],{
-        strokeDashoffset: len * 0.15,   // fast through center
-        duration:0.35,
-        ease:'power3.in'
-      }, 1.4)
-      .to([stroke,strokeGlow],{
-        strokeDashoffset: 0,            // slow arrival
-        duration:0.55,
-        ease:'power2.out'
-      }, 1.75);
+      .to([stroke,strokeGlow],{strokeDashoffset:len*0.60,duration:.55,ease:'power1.in'},1.15)
+      .to([stroke,strokeGlow],{strokeDashoffset:len*0.18,duration:.40,ease:'power2.inOut'},1.70)
+      .to([stroke,strokeGlow],{strokeDashoffset:0,       duration:.55,ease:'power3.out'},2.10)
+      .to(strokeEcho,{strokeDashoffset:0,duration:1.35,ease:'power2.inOut'},1.25);
 
-    // 4. End dot + second phrase reveal after stroke arrives
-    ahTL.to('#ah-dot-end',{opacity:1,duration:.25,ease:'power2.out'},2.1)
-        .to('#ahL3',{y:'0%',duration:.85,ease:'cubic-bezier(0.16,1,0.3,1)'},2.0)
-        .to('#ahL4',{y:'0%',duration:.85,ease:'cubic-bezier(0.16,1,0.3,1)'},2.15);
+    // 6. Mid-curve diamond ornament blooms as the line passes through
+    ahTL.fromTo(ornament,{opacity:0,scale:0,transformOrigin:'46.9px 55.3px'},
+                          {opacity:.85,scale:1,duration:.55,ease:'back.out(2.2)'},2.05);
 
-    // 5. Sub-label + scroll hint last
-    ahTL.to('#ahBrSub',{opacity:1,duration:.55,ease:'power2.out'},2.5)
-        .to('#ahScroll', {opacity:.7,duration:.6,ease:'power2.out'},2.7);
+    // 7. Accent tick above bottom-right title + end dot
+    ahTL.to(accBr,{strokeDashoffset:0,duration:.55,ease:'power2.out'},2.35)
+        .to(dotEnd,{opacity:1,duration:.3,ease:'power2.out'},2.55);
+
+    // 8. Bottom-right phrase reveals (its accent tick helps guide the eye there)
+    ahTL.to('#ahL3',{y:'0%',duration:.85,ease:'cubic-bezier(0.16,1,0.3,1)'},2.20)
+        .to('#ahL4',{y:'0%',duration:.85,ease:'cubic-bezier(0.16,1,0.3,1)'},2.35);
+
+    // 9. Sub-label + scroll hint last
+    ahTL.to('#ahBrSub',{opacity:1,duration:.55,ease:'power2.out'},2.75)
+        .to('#ahScroll', {opacity:.7,duration:.6,ease:'power2.out'},2.95);
+
+    // 10. Post-reveal: hand animation off to CSS (soft breathing + dot pulse)
+    ahTL.call(()=>{
+      stroke.classList.add('ah-breathe');
+      strokeGlow.classList.add('ah-breathe');
+      dotStart.classList.add('ah-dot-live');
+      dotEnd.classList.add('ah-dot-live');
+    },null,3.3);
   })();
 
   /* HERO MASK REVEAL */
